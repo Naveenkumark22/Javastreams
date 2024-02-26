@@ -1,0 +1,126 @@
+Remove if
+
+List<String> initialFilters = new ArrayList<>();
+        initialFilters.add("allow");
+        initialFilters.add("ban.ban");
+        initialFilters.add("deny");
+        initialFilters.removeIf(filterValue -> "ban.ban".equalsIgnoreCase(filterValue));
+        System.out.println(initialFilters);
+		
+		----------------
+		
+		key removeIf
+		
+		Map<Integer,String > ageMap = new HashMap<>();
+		ageMap.put(25,"Alice" );
+		ageMap.put(30,"Bob" );
+		ageMap.entrySet().removeIf(entry -> entry.getKey() > 28);
+		System.out.println(ageMap);
+
+		------------------
+		value removeIf
+
+Map<String, Integer> ageMap = new HashMap<>();
+ageMap.put("Alice", 25);
+ageMap.put("Bob", 30);
+ageMap.entrySet().removeIf(entry -> entry.getValue() > 28);
+
+
+------------------------------------
+
+ReplaceAll
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+
+        // Replace each element with its double		
+        numbers.replaceAll(n -> n * 2);
+        System.out.println(numbers);
+		
+		
+-----------------------------------
+Merge
+
+ map.put("Alice", 25);
+
+	        // Merge values for the key "Alice"
+	        map.merge("Alice", 5, (existingValue, newValue) -> existingValue * newValue);
+
+	        System.out.println("Merged Map: " + map);
+
+-------------------------------------	
+
+sublist
+
+       List<String> list = new ArrayList<>(List.of("one", "two", "three", "four", "five"));
+        
+        // Get a sublist from index 1 (inclusive) to 4 (exclusive)
+        List<String> subList = list.subList(1, 4);
+		
+-------------------------------------------
+
+        Map<String, Integer> map = new HashMap<>();
+        
+        // Compute value if the key is absent
+        map.computeIfAbsent("Alice", key -> 25);
+        map.computeIfAbsent("Bob", key -> 30);
+
+----------------------------------------------
+compute
+
+
+map.compute("Bob", (key, value) -> value == null ? 30 : value);
+
+
+---------------------------------------------
+
+List<String> words = List.of("cat", "dog", "car", "apple", "banana");
+
+        // Stream operations to filter and transform the list
+        List<String> result = words.stream()
+                .filter(word -> word.startsWith("c"))
+                .map(String::toUpperCase)
+                .collect(Collectors.toList());
+
+        // Print the result
+        result.forEach(System.out::println);	
+		
+		
+List<String> result = words.stream()
+                           .filter(word -> word.startsWith("c"))
+                           .map(word -> word.toUpperCase())
+                           .collect(Collectors.toList());
+
+
+----------------------------------------------------
+  int sum = numbers.stream().reduce(0, Integer::sum);
+int sum = numbers.stream().reduce(0, (a, b) -> a + b);
+----------------------------
+
+distinctt
+
+ List<Integer> numbers = Arrays.asList(1, 2, 2, 3, 4, 4, 5);
+
+        // Collect distinct elements into a new list
+        List<Integer> distinctNumbers = numbers.stream()
+                .distinct()
+                .collect(Collectors.toList());
+				
+----------------------------------------------
+.filter ---> used to define the condition for stream 
+map-------> transform the data in stream
+
+----------------------------------------------
+
+List<String> fruits = Arrays.asList("apple", "banana", "orange", "apple", "banana");
+
+	        // Group fruits by name and count occurrences
+	        Map<String, Long> fruitCount = fruits.stream()
+	                                             .collect(Collectors.groupingBy(
+	                                                     fruit -> fruit,
+	                                                     Collectors.counting()
+	                                             ));
+
+	        // Print the result
+	        System.out.println("Fruit count: " + fruitCount);	
+			
+-----------------------------------
