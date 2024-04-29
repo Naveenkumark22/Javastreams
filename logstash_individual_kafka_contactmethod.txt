@@ -1,0 +1,127 @@
+WITH max_last_update_value AS (
+    SELECT
+        MAX(last_update) AS max_last_update
+    FROM
+        (
+            SELECT
+                MAX(last_update_dt) AS last_update
+            FROM
+                mdm_usr.mlog$_locationgroup
+            WHERE
+                    old_new$$ = 'N'
+                AND last_update_dt > ?
+            UNION ALL
+            SELECT
+                MAX(last_update_dt) AS last_update
+            FROM
+                mdm_usr.mlog$_contactmethodgroup
+            WHERE
+                    old_new$$ = 'N'
+                AND last_update_dt > ?
+                UNION ALL
+            SELECT
+                MAX(last_update_dt) AS last_update
+            FROM
+                mdm_usr.mlog$_contactmethod
+            WHERE
+                    old_new$$ = 'N'
+                AND last_update_dt > ?
+        )
+)
+SELECT
+    admin_client_id as source_id,
+    name as source_system,
+    admin_sys_tp_cd as source_system_code,
+    description,
+    last_update_dt,
+    main_cust_ind,
+    main_system_ind AS main_maximo_ind,
+    person_org_code,
+    'CONTACTMETHOD' as cdc_type,
+    cont_id,
+    cont_equiv_id,
+    last_update_user,
+    contact_gk,
+    contact_gk_source,
+	'svw_cdc_contmeth_source_id' as cdc_view_name
+FROM
+    (
+        SELECT
+            contequiv.admin_client_id,
+            CASE
+                WHEN cdadminsystp.name LIKE 'IPACT%' THEN
+                    'IPACT'
+                WHEN cdadminsystp.name = 'AxiaCONTACT' THEN
+                    'AXIASFDC'
+                ELSE
+                    cdadminsystp.name
+            END                       AS name,
+            contequiv.admin_sys_tp_cd,
+            contequiv.description,
+            contactmethod_cdc.last_update_dt,
+            contequiv.main_cust_ind,
+            contequiv.main_system_ind,
+            contact.person_org_code,
+            contequiv.cont_id,
+            contequiv.cont_equiv_id,
+            contequiv.last_update_user,
+            person_gk.admin_client_id AS contact_gk,
+            person_source.name        AS contact_gk_source,
+            ROW_NUMBER()
+            OVER(PARTITION BY contequiv.admin_client_id, contequiv.admin_sys_tp_cd
+                 ORDER BY
+                     contactmethod_cdc.last_update_dt DESC
+            )                         AS rn
+        FROM
+                 (
+                SELECT
+                    contactmethodgroup.contequiv_id,
+                    mlog$_locationgroup.last_update_dt
+                FROM
+                    mdm_usr.mlog$_locationgroup, max_last_update_value ,
+                    mdm_usr.contactmethodgroup
+                WHERE
+                        mlog$_locationgroup.location_group_id = contactmethodgroup.location_group_id
+                    AND mlog$_locationgroup.old_new$$ = 'N'
+                    AND max_last_update_value.max_last_update >= mlog$_locationgroup.last_update_dt
+                    AND mlog$_locationgroup.last_update_dt > ?
+                UNION ALL
+                SELECT
+                    contactmethodgroup.contequiv_id,
+                    mlog$_contactmethodgroup.last_update_dt
+                FROM
+                   mdm_usr.mlog$_contactmethodgroup, max_last_update_value,
+                    mdm_usr.contactmethodgroup
+                WHERE
+                        mlog$_contactmethodgroup.contact_method_id = contactmethodgroup.contact_method_id
+                        AND max_last_update_value.max_last_update >= mlog$_contactmethodgroup.last_update_dt
+                    AND mlog$_contactmethodgroup.old_new$$ = 'N'
+                     AND mlog$_contactmethodgroup.last_update_dt > ?
+                UNION ALL
+                SELECT
+                    contactmethodgroup.contequiv_id,
+                    mlog$_contactmethod.last_update_dt
+                FROM
+                    mdm_usr.mlog$_contactmethod ,max_last_update_value ,
+                    mdm_usr.contactmethodgroup
+                WHERE
+                        mlog$_contactmethod.contact_method_id = contactmethodgroup.contact_method_id
+                        AND max_last_update_value.max_last_update >= mlog$_contactmethod.last_update_dt
+                    AND mlog$_contactmethod.old_new$$ = 'N'
+                     AND mlog$_contactmethod.last_update_dt > ?
+            ) contactmethod_cdc
+            INNER JOIN mdm_usr.contequiv ON contactmethod_cdc.contequiv_id = contequiv.cont_equiv_id
+                                    AND contequiv.admin_sys_tp_cd NOT IN ( '1000040' )
+                                    AND contequiv.end_dt IS NULL
+            LEFT OUTER JOIN mdm_usr.contequiv    person_gk ON person_gk.cont_id = contequiv.cont_id
+                                                   AND person_gk.admin_sys_tp_cd = 2000000
+            LEFT OUTER JOIN mdm_usr.cdadminsystp person_source ON person_source.admin_sys_tp_cd = person_gk.admin_sys_tp_cd
+                                                          AND ( person_gk.description != 'SECONDARY CONTACT GK'
+                                                                OR person_gk.description IS NULL )
+            INNER JOIN mdm_usr.contact ON contequiv.cont_id = contact.cont_id
+            INNER JOIN mdm_usr.cdadminsystp ON contequiv.admin_sys_tp_cd = cdadminsystp.admin_sys_tp_cd
+    )
+WHERE
+    rn = 1
+ORDER BY
+    last_update_dt
