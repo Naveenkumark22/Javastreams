@@ -1,0 +1,26 @@
+@Entity --> it defines at an entity
+@Table (name="") ---> defines the name of he table
+@UniqueConstraint(columnNames = {"employee_id", "email"})  ---> the combnations of this 2 does not match
+
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+GenerationType.SEQUENCE ,--->genetrate as sequence
+
+@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employee_seq")
+    @SequenceGenerator(name = "employee_seq", sequenceName = "employee_sequence", allocationSize = 1)
+
+Need to create sequence in  db:
+CREATE SEQUENCE employee_sequence
+    START WITH 1
+    INCREMENT BY 1;
+
+
+@column
+
+@Column(name = "full_name", nullable = false, length = 100)
+@Column(name = "email", unique = true)
+
+Lombok:
+@getter
+@setter
+@noargumentcontructor
+@allargumentconstructor
