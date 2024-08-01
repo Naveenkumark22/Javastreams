@@ -2,3 +2,85 @@ Filtering: Use filter to select elements based on a condition.
 Mapping: Use map to transform elements.
 Collecting: Use collect to accumulate elements into a collection.
 Reducing: Use reduce to combine elements into a single result.
+
+-----------------------
+FILTERNG LIST :
+
+        List<Integer> evenNumbers = numbers.stream()
+                                           .filter(n -> n % 2 == 0)
+                                           .collect(Collectors.toList());
+
+
+FILTERING MAPS:
+
+
+        Map<String, Integer> filteredItems = items.entrySet()
+                                                  .stream()
+                                                  .filter(entry -> entry.getValue() > 20)
+                                                  .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+
+-----------------------------------  
+FILTERING LIST OF STRING
+
+        List<String> filteredNames = names.stream()
+                                           .filter(name -> name.startsWith("A"))
+                                           .collect(Collectors.toList());
+
+LIST OF OBJECTS
+
+        List<Person> filteredPeople = people.stream()
+                                             .filter(person -> person.getAge() > 25)
+                                             .collect(Collectors.toList());
+
+-------------------------------------
+
+FILTERING MAP BASED ON KEY:
+
+        Map<String, Double> filteredProducts = products.entrySet()
+                                                       .stream()
+                                                       .filter(entry -> entry.getKey().contains("o"))
+                                                       .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+
+
+FILTERING MAP BASED ON VALUE:
+
+        Map<String, Integer> filteredEmployees = employees.entrySet()
+                                                          .stream()
+                                                          .filter(entry -> entry.getValue() > 60000)
+                                                          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+
+
+----------------------------------------------
+
+DISTINCT
+
+        List<String> uniqueNames = names.stream()
+                                        .distinct()
+                                        .collect(Collectors.toList());
+  
+ 
+------------------------------------------
+BASED ON MULTIPLE CONDITIONS
+
+        List<Integer> filteredNumbers = numbers.stream()
+                                               .filter(n -> n % 2 == 0)
+                                               .filter(n -> n > 5)
+                                               .collect(Collectors.toList());
+
+        List<Integer> filteredNumbers = numbers.stream()
+                                               .filter(n -> n % 2 == 0 && n > 5)
+                                               .collect(Collectors.toList());
+
+-------------------------------------
+
+USAGE OF PREDICATE METHOD:
+
+        Predicate<String> startsWithA = name -> name.startsWith("A");
+
+        // Filtering names using the predicate
+        List<String> filteredNames = names.stream()
+                                           .filter(startsWithA)
+                                           .collect(Collectors.toList());
