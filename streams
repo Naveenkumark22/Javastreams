@@ -1,0 +1,4 @@
+Filtering: Use filter to select elements based on a condition.
+Mapping: Use map to transform elements.
+Collecting: Use collect to accumulate elements into a collection.
+Reducing: Use reduce to combine elements into a single result.
