@@ -1,0 +1,9 @@
+LIST
+
+        List<String> collectedNames = names.stream()
+                                            .collect(Collectors.toList());
+
+SET:
+        Set<String> collectedNames = names.stream()
+                                           .collect(Collectors.toSet());
+
