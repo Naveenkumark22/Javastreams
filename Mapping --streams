@@ -1,0 +1,26 @@
+        List<Integer> nameLengths = names.stream()
+                                          .map(String::length)  // Convert names to their lengths
+                                          .collect(Collectors.toList());
+---------
+  FLATMAP
+
+ List<List<String>> listOfLists = Arrays.asList(
+            Arrays.asList("Apple", "Banana"),
+            Arrays.asList("Cherry", "Date"),
+            Arrays.asList("Fig", "Grape")
+        );
+
+        // Flattening the lists and mapping to uppercase
+        List<String> upperCaseFruits = listOfLists.stream()
+                                                   .flatMap(List::stream)
+                                                   .map(String::toUpperCase)
+                                                   .collect(Collectors.toList());
+
+        System.out.println(upperCaseFruits);  // Output: [APPLE, BANANA, CHERRY, D
+
+----------------------------------
+
+        List<String> filteredUpperCaseNames = names.stream()
+                                                    .filter(name -> name.length() > 3)
+                                                    .map(String::toUpperCase)
+                                                    .collect(Collectors.toList());
