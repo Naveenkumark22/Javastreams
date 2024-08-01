@@ -84,3 +84,16 @@ USAGE OF PREDICATE METHOD:
         List<String> filteredNames = names.stream()
                                            .filter(startsWithA)
                                            .collect(Collectors.toList());
+
+
+---------------------------------
+ANYMATCH :
+
+        boolean hasEvenNumber = numbers.stream().anyMatch(n -> n % 2 == 0);
+
+ALLMATCH :
+        boolean allEven = numbers.stream().allMatch(n -> n % 2 == 0);
+
+NONEMATCH :
+        boolean noEvenNumbers = numbers.stream().noneMatch(n -> n % 2 == 0);
+        
